@@ -1,4 +1,4 @@
-
+# filepath: /home/c0a23113f7/si-work/Takao/se-T10-Mt.Takao_System/SE-T10-Mt.Takao_System/app/main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -24,18 +24,14 @@ class Account(BaseModel):
     email: str
     password: str
 
+class QRCode(BaseModel):
+    qr_code: str
+
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     try:
-        file_path = os.path.join(os.path.dirname(__file__), "../app_html/test.html")    #ファイルパスを取得。今後変更フロントエンド側待ち
+        file_path = os.path.join(os.path.dirname(__file__), "../app_html/test.html")     # ファイルパスを取得(ファイルパス変わるので、今後変更が必要)
         with open(file_path, "r", encoding="utf-8") as file:
-            return HTMLResponse(content=file.read(), status_code=200)
-    except Exception as e:
-        return HTMLResponse(content=f"Error: {e}", status_code=500)
-    
-def read_root():
-    try:
-        with open(os.path.join(os.path.dirname(__file__), "../SE-T10=MT.Takao_System/app/app_html/test.html"), "r", encoding="utf-8") as file:
             return HTMLResponse(content=file.read(), status_code=200)
     except Exception as e:
         return HTMLResponse(content=f"Error: {e}", status_code=500)
@@ -50,6 +46,7 @@ def create_item(item: Item):
     connection.close()
     return {"message": "Item created", "item": item}
 
+# アカウントの作成を行う
 @app.post("/accounts/")
 def create_account(account: Account):
     connection = mysql.connector.connect(**db_config)
@@ -60,13 +57,17 @@ def create_account(account: Account):
     connection.close()
     return {"message": "Account created", "account": account}
 
-#アカウント情報を登録するAPI
-@app.post("/accounts")
-def create_account(item: Item):
+
+# QRコードの検証
+@app.post("/verify_qr/")
+def verify_qr(qr_code: QRCode):
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    cursor.execute("INSERT INTO accounts (name, description) VALUES (%s, %s)", (item.name, item.description))
-    connection.commit()
+    cursor.execute("SELECT route_name FROM stamps WHERE qr_code = %s", (qr_code.qr_code,))
+    result = cursor.fetchone()
     cursor.close()
     connection.close()
-    return {"message": "Account created", "item": item}
+    if result:
+        return {"message": "QRコードが正しいです", "route_name": result[0]}
+    else:
+        return {"message": "QRコードが無効です"}
