@@ -5,5 +5,9 @@ CREATE TABLE IF NOT EXISTS stamps (
     qr_code VARCHAR(255) NOT NULL
 );
 
-INSERT INTO stamps (route_name, qr_code) VALUES ('ルートA', 'QR_CODE_A');
-INSERT INTO stamps (route_name, qr_code) VALUES ('ルートB', 'QR_CODE_B');
+ALTER TABLE stamps ADD COLUMN is_peak BOOLEAN DEFAULT FALSE;
+
+INSERT INTO stamps (route_name, qr_code, is_peak) VALUES ('ルートA', 'QR_CODE_A1', FALSE);
+INSERT INTO stamps (route_name, qr_code, is_peak) VALUES ('ルートA', 'QR_CODE_A2', TRUE);
+INSERT INTO stamps (route_name, qr_code, is_peak) VALUES ('ルートB', 'QR_CODE_B1', FALSE);
+INSERT INTO stamps (route_name, qr_code, is_peak) VALUES ('ルートB', 'QR_CODE_B2', TRUE);

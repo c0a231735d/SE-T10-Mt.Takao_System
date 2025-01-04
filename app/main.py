@@ -1,4 +1,3 @@
-# filepath: /home/c0a23113f7/si-work/Takao/se-T10-Mt.Takao_System/SE-T10-Mt.Takao_System/app/main.py
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
@@ -46,7 +45,8 @@ def create_item(item: Item):
     connection.close()
     return {"message": "Item created", "item": item}
 
-# アカウントの作成を行う
+
+#アカウントの作成
 @app.post("/accounts/")
 def create_account(account: Account):
     connection = mysql.connector.connect(**db_config)
@@ -58,16 +58,20 @@ def create_account(account: Account):
     return {"message": "Account created", "account": account}
 
 
-# QRコードの検証
+#QRコードの検証
 @app.post("/verify_qr/")
 def verify_qr(qr_code: QRCode):
     connection = mysql.connector.connect(**db_config)
     cursor = connection.cursor()
-    cursor.execute("SELECT route_name FROM stamps WHERE qr_code = %s", (qr_code.qr_code,))
+    cursor.execute("SELECT route_name, is_peak FROM stamps WHERE qr_code = %s", (qr_code.qr_code,))
     result = cursor.fetchone()
     cursor.close()
     connection.close()
     if result:
-        return {"message": "QRコードが正しいです", "route_name": result[0]}
+        route_name, is_peak = result
+        if is_peak:
+            return {"message": "QRコードが正しいです", "route_name": route_name, "is_peak": True}
+        else:
+            return {"message": "QRコードが正しいです", "route_name": route_name, "is_peak": False}
     else:
         return {"message": "QRコードが無効です"}
