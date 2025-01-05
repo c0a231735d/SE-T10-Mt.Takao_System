@@ -1,39 +1,48 @@
+import os
+from pydantic import BaseModel
+
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
-from pydantic import BaseModel
 import mysql.connector
-import os
+
 
 app = FastAPI()
 
 # MySQL 接続設定
 db_config = {
-    "host": "db",
+    "host": "localhost",
+    "port": 3306,
     "user": "root",
     "password": "password",
-    "database": "example_db"
+    "database": "main_db"
 }
+
 
 class Item(BaseModel):
     name: str
     description: str
+
 
 class Account(BaseModel):
     username: str
     email: str
     password: str
 
+
 class QRCode(BaseModel):
     qr_code: str
+
 
 @app.get("/", response_class=HTMLResponse)
 def read_root():
     try:
-        file_path = os.path.join(os.path.dirname(__file__), "../app_html/test.html")     # ファイルパスを取得(ファイルパス変わるので、今後変更が必要)
+        # ファイルパスを取得(ファイルパス変わるので、今後変更が必要)
+        file_path = os.path.join(os.path.dirname(__file__), "../app_html/test.html")
         with open(file_path, "r", encoding="utf-8") as file:
             return HTMLResponse(content=file.read(), status_code=200)
     except Exception as e:
         return HTMLResponse(content=f"Error: {e}", status_code=500)
+
 
 @app.post("/items/")
 def create_item(item: Item):
