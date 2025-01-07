@@ -1,0 +1,23 @@
+{
+  "name": "qr-code-reader",
+  "version": "1.0.0",
+  "description": "QRコードを読み込むためのアプリケーション",
+  "main": "src/app.js",
+  "scripts": {
+    "start": "live-server src"
+  },
+  "dependencies": {
+    "html5-qrcode": "^2.0.0"
+  },
+  "devDependencies": {
+    "live-server": "^1.2.1"
+  },
+  "keywords": [
+    "QRコード",
+    "リーダー",
+    "カメラ",
+    "JavaScript"
+  ],
+  "author": "あなたの名前",
+  "license": "MIT"
+}

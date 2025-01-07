@@ -3,10 +3,23 @@ from pydantic import BaseModel
 
 from fastapi import FastAPI, Request
 from fastapi.responses import HTMLResponse
+from fastapi.templating import Jinja2Templates
 import mysql.connector
-
+from fastapi.staticfiles import StaticFiles
 
 app = FastAPI()
+
+templates = Jinja2Templates(directory="templates")
+
+@app.get("/mypage", response_class=HTMLResponse)
+def mypage(request: Request):
+    return templates.TemplateResponse("mypage.html", {"request": request})
+
+app.mount("/qr-code-reader", StaticFiles(directory="qr-code-reader/src"), name="qr-code-reader")
+@app.get("/qr-reader", response_class=HTMLResponse)
+def qr_reader(request: Request):
+    return templates.TemplateResponse("index.html", {"request": request})
+
 
 # MySQL 接続設定
 db_config = {
